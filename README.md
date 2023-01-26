@@ -2,6 +2,9 @@
 
 A simple Concourse-resource that fetch the Weather from <https://open-meteo.com/> at a given latitude and longitude.
 
+Publicly available on [Docker Hub](https://hub.docker.com/r/jimetevenard/weather-concourse-resource),
+so any Concourse-CI instance should be able to use it !
+
 ![Meteo pipeline](screenshot.png)
 
 ## Usage
@@ -72,7 +75,7 @@ whose single value will correspond to the _time_ returned by open-meteo API.
 
 This weather API has an update time of *an hour*.
 
-So, the resource will be consider as _updated_ by Concourse-CI every hour.
+So, the resource will be considered as _updated_ by Concourse-CI every hour.
 
 The `check_every` concourse param should be aligned with this
 duration to avoid unnecessary calls to the API.
@@ -81,4 +84,54 @@ duration to avoid unnecessary calls to the API.
 
 This stateless resource can't be updated in any way.
 
-This endpoint will exit as failure in every case.
+This endpoint will exit in failure in every case.
+
+## Miscellaneous
+
+### Local testing with Docker
+
+See <https://concourse-ci.org/implementing-resource-types.html#test-resource-with-docker>
+
+You can use Docker to run a container "like concourse would do"
+
+Create a `input.json` in some random directory of your machine :
+
+It mimics the JSON that Concourse will send through `stdin` if the above pipeline sample is used (the `version.time` will, of course, be different)
+
+````json
+{
+  "source": {
+    "latitude": 48.84,
+    "longitude": 2.42
+  },
+  "version": {
+    "time": "2023-01-26T17:00"
+  }
+}
+````
+
+#### Testing `check` :
+
+````sh
+docker run --rm -i -v "${PWD}:${PWD}" -w "${PWD}" test /opt/resource/check < input.json
+````
+
+Should output (`stdout`) something like : `[{"time": "2023..."}]`
+
+#### Testing `in` :
+
+````sh
+docker run --rm -i -v "${PWD}:${PWD}" -w "${PWD}" test /opt/resource/in . < input.json
+````
+
+Should create a `weather.json` file in your current working directory (see the `-v` option in the above command)
+
+And also output (`stdout`) something like : `{"version": { "time":  "2023..." }, "metadata": []}`
+
+#### Testing `out` :
+
+````sh
+docker run --rm -i -v "${PWD}:${PWD}" -w "${PWD}" test /opt/resource/out < input.json
+````
+
+Should always fail and output (`stderr`) the folling message  : `This resource does not implements 'out' endpoint`
