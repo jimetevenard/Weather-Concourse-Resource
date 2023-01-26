@@ -37,13 +37,20 @@ process.stdin.on('data', data => {
       .then((result => {
         const operation = process.argv[2];
         switch(operation){
+
           case IN_FLAG:
             const resultPath = process.argv[3] + '/weather.json';
             fs.writeFileSync(resultPath, JSON.stringify(result));
+            console.log(JSON.stringify({
+              version: { time: result.time },
+              metadata: []
+            }));
             break;
+
           case CHECK_FLAG:
             console.log(JSON.stringify([{time: result.time}]));
             break;
+
           default:
             throw new Error('Unsupported operation');
         }
