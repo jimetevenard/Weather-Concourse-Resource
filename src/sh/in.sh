@@ -1,2 +1,2 @@
 #!/bin/sh
-node /app/concourse-in.js $1
+node /app/concourse.js --in $1

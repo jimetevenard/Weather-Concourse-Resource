@@ -1,6 +1,9 @@
 const sendMeteoRequest = require('./meteo/meteo');
 const fs = require('fs');
 
+const IN_FLAG = "--in";
+const CHECK_FLAG = "--check";
+
 /**
  * Le format d'input sera le suivant :
  * <code>
@@ -25,14 +28,25 @@ const fs = require('fs');
  */
 process.stdin.on('data', data => {
     const input = JSON.parse(data.toString());
+
     if(!(input.source && input.source.latitude && input.source.longitude)){
       throw new Error('Invalid input format !');
     }
 
     sendMeteoRequest(input.source)
       .then((result => {
-        const resultPath = process.argv[2] + '/weather.json';
-        fs.writeFileSync(resultPath, JSON.stringify(result));
+        const operation = process.argv[2];
+        switch(operation){
+          case IN_FLAG:
+            const resultPath = process.argv[3] + '/weather.json';
+            fs.writeFileSync(resultPath, JSON.stringify(result));
+            break;
+          case CHECK_FLAG:
+            console.log(JSON.stringify([{time: result.time}]));
+            break;
+          default:
+            throw new Error('Unsupported operation');
+        }
       }));
     
 });
