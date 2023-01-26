@@ -34,7 +34,7 @@ process.stdin.on('data', data => {
     }
 
     sendMeteoRequest(input.source)
-      .then((result => {
+      .then(result => {
         const operation = process.argv[2];
         switch(operation){
 
@@ -54,6 +54,6 @@ process.stdin.on('data', data => {
           default:
             throw new Error('Unsupported operation');
         }
-      }));
+      });
     
 });
