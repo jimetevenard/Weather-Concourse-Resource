@@ -2,6 +2,8 @@
 
 A simple Concourse-resource that fetch the Weather from <https://open-meteo.com/> at a given latitude and longitude.
 
+![Meteo pipeline](screenshot.png)
+
 ## Usage
 
 Use it in a pipeline
