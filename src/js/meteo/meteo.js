@@ -1,19 +1,16 @@
 const httpClient = require('./https-client');
 
-// Saint-Mandé (94) France
-const geoLoc = {
-  lat: 48.84,
-  long: 2.42
-};
 
 // URL du endpoint API météo
-const URL = `https://api.open-meteo.com/v1/forecast?latitude=${geoLoc.lat}&longitude=${geoLoc.long}&current_weather=true`;
 
 
 
-const sendWeatherRequest = function() {
+
+const sendWeatherRequest = function(geoloc) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${geoloc.latitude}&longitude=${geoloc.longitude}&current_weather=true`;
+
   return new Promise((resolve) => {
-    httpClient.sendRequest(URL)
+    httpClient.sendRequest(url)
       .then(weatherJSON => {
         const weatherObject = JSON.parse(weatherJSON);
         const weathercode = weatherObject.current_weather.weathercode;
